@@ -30,6 +30,20 @@ EmployeeProvider.prototype.findAll = function(callback) {
     });
 };
 
+
+//find an employee by ID
+EmployeeProvider.prototype.findById = function(id, callback) {
+    this.getCollection(function(error, employee_collection) {
+      if( error ) callback(error)
+      else {
+        employee_collection.findOne({_id: employee_collection.db.bson_serializer.ObjectID.createFromHexString(id)}, function(error, result) {
+          if( error ) callback(error)
+          else callback(null, result)
+        });
+      }
+    });
+};
+
 //save new employee
 EmployeeProvider.prototype.save = function(employees, callback) {
     this.getCollection(function(error, employee_collection) {
@@ -48,6 +62,37 @@ EmployeeProvider.prototype.save = function(employees, callback) {
         });
       }
     });
+};
+
+// update an employee
+EmployeeProvider.prototype.update = function(employeeId, employees, callback) {
+    this.getCollection(function(error, employee_collection) {
+      if( error ) callback(error);
+      else {
+        employee_collection.update(
+                                        {_id: employee_collection.db.bson_serializer.ObjectID.createFromHexString(employeeId)},
+                                        employees,
+                                        function(error, employees) {
+                                                if(error) callback(error);
+                                                else callback(null, employees)       
+                                        });
+      }
+    });
+};
+
+//delete employee
+EmployeeProvider.prototype.delete = function(employeeId, callback) {
+        this.getCollection(function(error, employee_collection) {
+                if(error) callback(error);
+                else {
+                        employee_collection.remove(
+                                {_id: employee_collection.db.bson_serializer.ObjectID.createFromHexString(employeeId)},
+                                function(error, employee){
+                                        if(error) callback(error);
+                                        else callback(null, employee)
+                                });
+                        }
+        });
 };
 
 exports.EmployeeProvider = EmployeeProvider;
